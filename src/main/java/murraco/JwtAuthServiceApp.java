@@ -18,19 +18,19 @@ import murraco.service.UserService;
 @RequiredArgsConstructor
 public class JwtAuthServiceApp implements CommandLineRunner {
 
-  final UserService userService;
+    final UserService userService;
 
-  public static void main(String[] args) {
-    SpringApplication.run(JwtAuthServiceApp.class, args);
-  }
+    public static void main(String[] args) {
+	SpringApplication.run(JwtAuthServiceApp.class, args);
+    }
 
-  @Bean
-  public ModelMapper modelMapper() {
-    return new ModelMapper();
-  }
+    @Bean
+    public ModelMapper modelMapper() {
+	return new ModelMapper();
+    }
 
-  @Override
-  public void run(String... params) throws Exception {
+    @Override
+    public void run(String... params) throws Exception {
 //    AppUser admin = new AppUser();
 //    admin.setUsername("admin");
 //    admin.setPassword("admin");
@@ -46,6 +46,6 @@ public class JwtAuthServiceApp implements CommandLineRunner {
 //    client.setAppUserRoles(new ArrayList<AppUserRole>(Arrays.asList(AppUserRole.ROLE_CLIENT)));
 //
 //    userService.signup(client);
-  }
+    }
 
 }
