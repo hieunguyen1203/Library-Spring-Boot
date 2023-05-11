@@ -6,7 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import library.hieund.exception.CustomException;
-import library.hieund.model.AppUser;
+import library.hieund.model.User;
 import library.hieund.model.Book;
 import library.hieund.repository.BookRepository;
 import library.hieund.repository.UserRepository;

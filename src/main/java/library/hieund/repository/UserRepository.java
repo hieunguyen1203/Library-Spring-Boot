@@ -4,13 +4,13 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import library.hieund.model.AppUser;
+import library.hieund.model.User;
 
-public interface UserRepository extends JpaRepository<AppUser, Integer> {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
   boolean existsByUsername(String username);
 
-  AppUser findByUsername(String username);
+  User findByUsername(String username);
 
   @Transactional
   void deleteByUsername(String username);

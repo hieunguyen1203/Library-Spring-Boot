@@ -28,7 +28,7 @@ import org.hibernate.annotations.Cascade;
 
 @Data // Create getters and setters
 @NoArgsConstructor
-public class AppUser {
+public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +46,6 @@ public class AppUser {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name="role")
-  List<AppUserRole> appUserRoles;
+  List<UserRole> appUserRoles;
 
 }

@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import library.hieund.model.AppUser;
+import library.hieund.model.User;
 import library.hieund.repository.UserRepository;
 
 @Service
@@ -18,7 +18,7 @@ public class MyUserDetails implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    final AppUser appUser = userRepository.findByUsername(username);
+    final User appUser = userRepository.findByUsername(username);
 
     if (appUser == null) {
       throw new UsernameNotFoundException("User '" + username + "' not found");

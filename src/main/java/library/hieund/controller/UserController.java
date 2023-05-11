@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import library.hieund.dto.UserDataDTO;
 import library.hieund.dto.UserResponseDTO;
-import library.hieund.model.AppUser;
+import library.hieund.model.User;
 import library.hieund.service.UserService;
 
 @RestController
@@ -53,7 +53,7 @@ public class UserController {
 	    @ApiResponse(code = 403, message = "Access denied"), //
 	    @ApiResponse(code = 422, message = "Username is already in use") })
     public String signup(@ApiParam("Signup User") @RequestBody UserDataDTO user) {
-	return userService.signup(modelMapper.map(user, AppUser.class));
+	return userService.signup(modelMapper.map(user, User.class));
     }
 
     @DeleteMapping(value = "/{username}")

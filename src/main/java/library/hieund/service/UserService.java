@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import library.hieund.exception.CustomException;
-import library.hieund.model.AppUser;
+import library.hieund.model.User;
 import library.hieund.repository.UserRepository;
 import library.hieund.security.JwtTokenProvider;
 
@@ -33,7 +33,7 @@ public class UserService {
 	}
     }
 
-    public String signup(AppUser appUser) {
+    public String signup(User appUser) {
 	if (!userRepository.existsByUsername(appUser.getUsername())) {
 	    appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
 	    userRepository.save(appUser);
@@ -47,15 +47,15 @@ public class UserService {
 	userRepository.deleteByUsername(username);
     }
 
-    public AppUser search(String username) {
-	AppUser appUser = userRepository.findByUsername(username);
+    public User search(String username) {
+	User appUser = userRepository.findByUsername(username);
 	if (appUser == null) {
 	    throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
 	}
 	return appUser;
     }
 
-    public AppUser whoami(HttpServletRequest req) {
+    public User whoami(HttpServletRequest req) {
 	return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
     }
 

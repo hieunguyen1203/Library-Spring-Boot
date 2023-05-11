@@ -11,8 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import library.hieund.model.AppUser;
-import library.hieund.model.AppUserRole;
+import library.hieund.model.User;
+import library.hieund.model.UserRole;
 import library.hieund.service.UserService;
 
 @SpringBootApplication

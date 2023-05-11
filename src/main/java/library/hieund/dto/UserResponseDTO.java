@@ -3,7 +3,7 @@ package library.hieund.dto;
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
-import library.hieund.model.AppUserRole;
+import library.hieund.model.UserRole;
 import lombok.Data;
 
 @Data
@@ -16,6 +16,6 @@ public class UserResponseDTO {
   @ApiModelProperty(position = 2)
   private String email;
   @ApiModelProperty(position = 3)
-  List<AppUserRole> appUserRoles;
+  List<UserRole> appUserRoles;
 
 }

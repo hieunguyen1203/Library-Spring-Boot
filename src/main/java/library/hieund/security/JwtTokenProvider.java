@@ -23,7 +23,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import library.hieund.exception.CustomException;
-import library.hieund.model.AppUserRole;
+import library.hieund.model.UserRole;
 
 @Component
 public class JwtTokenProvider {
@@ -46,7 +46,7 @@ public class JwtTokenProvider {
     secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
   }
 
-  public String createToken(String username, List<AppUserRole> appUserRoles) {
+  public String createToken(String username, List<UserRole> appUserRoles) {
 
     Claims claims = Jwts.claims().setSubject(username);
     claims.put("auth", appUserRoles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
