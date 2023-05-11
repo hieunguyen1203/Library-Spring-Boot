@@ -22,20 +22,17 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    int code = 0;
-    String msg = "";
-
     public Map<String, Object> addBook(Book book) {
 	if (!bookRepository.existsByTitle(book.getTitle())) {
 	    bookRepository.save(book);
-	    code = 1;
-	    msg = "Success";
+	    return getResponseJson(1, "Success");
+
 	} else {
-	    code = 0;
-	    msg = "Book is already exists";
-//	      throw new CustomException("Book is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
+	    return getResponseJson(0, "Book is already exists");
+
+//	    throw new CustomException("Book is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
 	}
-	return getResponseJson();
+
     }
 
     public Map<String, Object> deleteById(int id) {
@@ -43,13 +40,13 @@ public class BookService {
 	Book book = bookRepository.findById(id);
 	if (book != null) {
 	    bookRepository.delete(book);
-	    code = 1;
-	    msg = "Success";
+	    return getResponseJson(1, "Success");
+
 	} else {
-	    code = 0;
-	    msg = "Book not found";
+	    return getResponseJson(0, "Book not found");
+
 	}
-	return getResponseJson();
+
     }
 
     public Map<String, Object> deleteByTitleAndAuthor(String title, String author) {
@@ -57,16 +54,16 @@ public class BookService {
 	Book book = bookRepository.findByTitleAndAuthor(title, author);
 	if (book != null) {
 	    bookRepository.delete(book);
-	    code = 1;
-	    msg = "Success";
+	    return getResponseJson(1, "Success");
+
 	} else {
-	    code = 0;
-	    msg = "Book not found";
+	    return getResponseJson(0, "Book not found");
+
 	}
-	return getResponseJson();
+
     }
 
-    private Map<String, Object> getResponseJson() {
+    private Map<String, Object> getResponseJson(int code, String msg) {
 	Map<String, Object> map = new HashMap<>();
 	map.put("code", code);
 	map.put("message", msg);
