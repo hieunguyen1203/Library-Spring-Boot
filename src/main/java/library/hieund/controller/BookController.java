@@ -1,10 +1,17 @@
 package library.hieund.controller;
 
+import java.util.Map;
+
 import org.modelmapper.ModelMapper;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -12,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import library.hieund.dto.BookDTO;
 import library.hieund.model.Book;
 import library.hieund.service.BookService;
@@ -26,24 +34,32 @@ public class BookController {
     private final BookService bookService;
     private final ModelMapper modelMapper;
 
-    @GetMapping("/test")
-    @ApiOperation(value = "${BookController.test}")
-    @ApiResponses(value = { //
-	    @ApiResponse(code = 400, message = "Something went wrong"), //
-	    @ApiResponse(code = 403, message = "Access denied============"), //
-	    @ApiResponse(code = 422, message = "Book title is already in use") })
-    public String test() {
-	return bookService.test();
-    }
-
-    @PostMapping("/addBook")
+    @PostMapping("/add")
     @ApiOperation(value = "${BookController.addBook}")
     @ApiResponses(value = { //
 	    @ApiResponse(code = 400, message = "Something went wrong"), //
 	    @ApiResponse(code = 403, message = "Access denied"), //
 	    @ApiResponse(code = 422, message = "Book title is already in use") })
-    public String addBook(@ApiParam("Add book") @RequestBody BookDTO book) {
+    public Map<String, Object> addBook(@RequestBody BookDTO book) {
 	return bookService.addBook(modelMapper.map(book, Book.class));
+    }
+
+    @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
+    @ApiOperation(value = "${BookController.delete}", authorizations = { @Authorization(value = "apiKey") })
+    @ApiResponses(value = { //
+	    @ApiResponse(code = 400, message = "Something went wrong"), //
+	    @ApiResponse(code = 403, message = "Access denied"), //
+	    @ApiResponse(code = 422, message = "Book title is already in use") })
+    public Map<String, Object> delete(@RequestParam(value = "id", required = false, defaultValue = "0") int id,
+	    @RequestParam(value = "title", required = false, defaultValue = "") String title,
+	    @RequestParam(value = "author", required = false, defaultValue = "") String author) {
+	if (id != 0) {
+	    return bookService.deleteById(id);
+	} else {
+	    return bookService.deleteByTitleAndAuthor(title, author);
+	}
+
     }
 
 }

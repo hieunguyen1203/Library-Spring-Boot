@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{username}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     @ApiOperation(value = "${UserController.delete}", authorizations = { @Authorization(value = "apiKey") })
     @ApiResponses(value = { //
 	    @ApiResponse(code = 400, message = "Something went wrong"), //
@@ -70,7 +70,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{username}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     @ApiOperation(value = "${UserController.search}", response = UserResponseDTO.class, authorizations = {
 	    @Authorization(value = "apiKey") })
     @ApiResponses(value = { //
@@ -83,7 +83,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/me")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN') or hasRole('ROLE_BORROWER')")
     @ApiOperation(value = "${UserController.me}", response = UserResponseDTO.class, authorizations = {
 	    @Authorization(value = "apiKey") })
     @ApiResponses(value = { //
@@ -95,7 +95,7 @@ public class UserController {
     }
 
     @GetMapping("/refresh")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN') or hasRole('ROLE_BORROWER')")
     public String refresh(HttpServletRequest req) {
 	return userService.refresh(req.getRemoteUser());
     }

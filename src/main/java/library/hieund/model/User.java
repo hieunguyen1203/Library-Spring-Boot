@@ -20,9 +20,6 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cascade;
 
-
-
-
 @Entity(name = "users")
 //@Table(name = "users")
 
@@ -30,22 +27,22 @@ import org.hibernate.annotations.Cascade;
 @NoArgsConstructor
 public class User {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-  @Size(min = 4, max = 255, message = "Minimum username length: 4 characters")
-  @Column(unique = true, nullable = false)
-  private String username;
+    @Size(min = 4, max = 255, message = "Minimum username length: 4 characters")
+    @Column(unique = true, nullable = false)
+    private String username;
 
-  @Column(unique = true, nullable = false)
-  private String email;
+    @Column(unique = true, nullable = false)
+    private String email;
 
-  @Size(min = 8, message = "Minimum password length: 8 characters")
-  private String password;
+    @Size(min = 7, message = "Minimum password length: 7 characters")
+    private String password;
 
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name="role")
-  List<UserRole> appUserRoles;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "role")
+    List<UserRole> appUserRoles;
 
 }
