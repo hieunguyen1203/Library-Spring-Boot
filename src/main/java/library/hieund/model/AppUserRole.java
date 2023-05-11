@@ -1,4 +1,4 @@
-package murraco.model;
+package library.hieund.model;
 
 import org.springframework.security.core.GrantedAuthority;
 

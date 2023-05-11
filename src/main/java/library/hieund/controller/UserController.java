@@ -1,9 +1,9 @@
-package murraco.controller;
+package library.hieund.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
-import murraco.model.AppUser;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,9 +21,10 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
-import murraco.dto.UserDataDTO;
-import murraco.dto.UserResponseDTO;
-import murraco.service.UserService;
+import library.hieund.dto.UserDataDTO;
+import library.hieund.dto.UserResponseDTO;
+import library.hieund.model.AppUser;
+import library.hieund.service.UserService;
 
 @RestController
 @RequestMapping("/users")

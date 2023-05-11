@@ -1,4 +1,4 @@
-package murraco.model;
+package library.hieund.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

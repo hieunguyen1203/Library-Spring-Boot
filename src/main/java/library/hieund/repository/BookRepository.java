@@ -1,9 +1,9 @@
-package murraco.repository;
+package library.hieund.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import murraco.model.AppUser;
-import murraco.model.Book;
+import library.hieund.model.AppUser;
+import library.hieund.model.Book;
 
 public interface BookRepository extends JpaRepository<Book, Integer>{
 //	Books findBooks(String title);

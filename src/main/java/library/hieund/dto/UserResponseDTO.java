@@ -1,10 +1,10 @@
-package murraco.dto;
+package library.hieund.dto;
 
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
+import library.hieund.model.AppUserRole;
 import lombok.Data;
-import murraco.model.AppUserRole;
 
 @Data
 public class UserResponseDTO {

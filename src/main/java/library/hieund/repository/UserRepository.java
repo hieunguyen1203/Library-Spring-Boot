@@ -1,10 +1,10 @@
-package murraco.repository;
+package library.hieund.repository;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import murraco.model.AppUser;
+import library.hieund.model.AppUser;
 
 public interface UserRepository extends JpaRepository<AppUser, Integer> {
 

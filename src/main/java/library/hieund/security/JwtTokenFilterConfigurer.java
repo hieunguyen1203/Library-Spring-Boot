@@ -1,4 +1,4 @@
-package murraco.security;
+package library.hieund.security;
 
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

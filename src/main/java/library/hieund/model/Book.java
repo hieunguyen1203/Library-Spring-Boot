@@ -1,4 +1,4 @@
-package murraco.model;
+package library.hieund.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
