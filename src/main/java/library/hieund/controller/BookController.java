@@ -36,22 +36,12 @@ public class BookController {
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    @ApiOperation(value = "${BookController.addBook}")
-    @ApiResponses(value = { //
-	    @ApiResponse(code = 400, message = "Something went wrong"), //
-	    @ApiResponse(code = 403, message = "Access denied"), //
-	    @ApiResponse(code = 422, message = "Book title is already in use") })
     public Map<String, Object> addBook(@RequestBody BookDTO book) {
 	return bookService.addBook(modelMapper.map(book, Book.class));
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    @ApiOperation(value = "${BookController.delete}", authorizations = { @Authorization(value = "apiKey") })
-    @ApiResponses(value = { //
-	    @ApiResponse(code = 400, message = "Something went wrong"), //
-	    @ApiResponse(code = 403, message = "Access denied"), //
-	    @ApiResponse(code = 422, message = "Book not found") })
     public Map<String, Object> delete(@RequestParam(value = "id", required = false, defaultValue = "0") int id,
 	    @RequestParam(value = "title", required = false, defaultValue = "") String title,
 	    @RequestParam(value = "author", required = false, defaultValue = "") String author) {
