@@ -281,7 +281,7 @@ $ git clone https://github.com/<user>/Library-Spring-Boot.git
 3. Navigate into the folder  
 
 ```
-$ cd spring-boot-jwt
+$ cd Library-Spring-Boot
 ```
 
 4. Install dependencies
@@ -333,10 +333,3 @@ $ curl -X GET http://localhost:8080/users/me -H 'Authorization: Bearer <JWT_TOKE
   ]
 }
 ```
-
-# Contribution
-
-- Report issues
-- Open pull request with improvements
-- Spread the word
-- Reach out to me directly at <mauriurraco@gmail.com>
