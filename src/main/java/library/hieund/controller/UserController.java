@@ -1,6 +1,7 @@
 package library.hieund.controller;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import io.swagger.annotations.Authorization;
 import library.hieund.dto.UserDTO;
 import library.hieund.dto.UserResponseDTO;
 import library.hieund.model.User;
+import library.hieund.model.UserRole;
 import library.hieund.service.UserService;
 import library.hieund.validator.EmailConstraint;
 
@@ -67,6 +69,12 @@ public class UserController {
 	    @ApiResponse(code = 422, message = "Username is already in use") })
     public String register(@ApiParam("Signup User") @RequestBody UserDTO user) {
 	return userService.register(modelMapper.map(user, User.class));
+    }
+
+    @PostMapping("/create")
+    public String createUser(@RequestBody @Valid UserDTO userDTO) {
+
+	return userService.createUser(modelMapper.map(userDTO, User.class));
     }
 
     @DeleteMapping(value = "/{username}")

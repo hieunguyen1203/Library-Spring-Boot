@@ -22,7 +22,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
 	final Map<String, Object> mapBodyException = new HashMap<>();
 
-	mapBodyException.put("code", HttpServletResponse.SC_UNAUTHORIZED);
+	mapBodyException.put("status", HttpServletResponse.SC_UNAUTHORIZED);
 	mapBodyException.put("error", "Authentication Failed");
 
 	// mapBodyException.put("message", "Message from AuthenticationEntryPoint");

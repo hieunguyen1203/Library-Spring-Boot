@@ -1,5 +1,7 @@
 package library.hieund.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import org.springframework.validation.BindingResult;
 import library.hieund.dto.UserDTO;
 import library.hieund.exception.CustomException;
 import library.hieund.model.User;
+import library.hieund.model.UserRole;
 import library.hieund.repository.UserRepository;
 import library.hieund.security.JwtTokenProvider;
 
@@ -64,6 +67,18 @@ public class UserService {
 	    jsonObject.put("access_token", jwtTokenProvider.createToken(appUser.getEmail(), appUser.getAppUserRoles()));
 
 	    return jsonObject.toString();
+	} else {
+	    return returnError("Email is already in use");
+//	    throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+    }
+
+    public String createUser(User appUser) {
+	if (!userRepository.existsByEmail(appUser.getEmail())) {
+	    appUser.setAppUserRoles(new ArrayList<UserRole>(Arrays.asList(UserRole.ROLE_BORROWER)));
+	    appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+	    userRepository.save(appUser);
+	    return returnSuccess();
 	} else {
 	    return returnError("Email is already in use");
 //	    throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
