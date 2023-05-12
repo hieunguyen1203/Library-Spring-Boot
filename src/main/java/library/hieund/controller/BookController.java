@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -44,23 +45,24 @@ public class BookController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     @ExceptionHandler(CustomException.class)
-    public Map<String, Object> addBook(@RequestBody BookDTO book) {
-	Map<String, Object> map = new HashMap<>();
-	map.put("code", 0);
+    public String addBook(@RequestBody BookDTO book) {
+	JSONObject jsonObject = new JSONObject();
+	JSONObject errors = new JSONObject();
 	if (!NumberUtils.isParsable(book.getTotal())) {
-	    map.put("message", "Total must be numeric");
+	    errors.put("message", "Total must be numeric");
 	} else if (!NumberUtils.isParsable(book.getStock())) {
-	    map.put("message", "Stock must be numeric");
+	    errors.put("message", "Stock must be numeric");
 	} else {
 	    return bookService.addBook(modelMapper.map(book, Book.class));
 
 	}
-	return map;
+	jsonObject.put("error", errors);
+	return jsonObject.toString();
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public Map<String, Object> delete(@RequestParam(value = "id", required = false, defaultValue = "0") int id,
+    public String delete(@RequestParam(value = "id", required = false, defaultValue = "0") int id,
 	    @RequestParam(value = "title", required = false, defaultValue = "") String title,
 	    @RequestParam(value = "author", required = false, defaultValue = "") String author) {
 	if (id != 0) {

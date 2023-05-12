@@ -3,6 +3,7 @@ package library.hieund.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,52 +23,59 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    public Map<String, Object> addBook(Book book) {
+    public String addBook(Book book) {
 	if (!bookRepository.existsByTitle(book.getTitle())) {
 	    bookRepository.save(book);
-	    return getResponseJson(1, "Success");
+	    return returnSuccess();
 
 	} else {
-	    return getResponseJson(0, "Book is already exists");
+	    return returnError("Book is already exists");
 
 //	    throw new CustomException("Book is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
     }
 
-    public Map<String, Object> deleteById(int id) {
+    public String deleteById(int id) {
 
 	Book book = bookRepository.findById(id);
 	if (book != null) {
 	    bookRepository.delete(book);
-	    return getResponseJson(1, "Success");
+	    return returnSuccess();
 
 	} else {
-	    return getResponseJson(0, "Book not found");
+	    return returnError("Book not found");
 
 	}
 
     }
 
-    public Map<String, Object> deleteByTitleAndAuthor(String title, String author) {
+    public String deleteByTitleAndAuthor(String title, String author) {
 
 	Book book = bookRepository.findByTitleAndAuthor(title, author);
 	if (book != null) {
 	    bookRepository.delete(book);
-	    return getResponseJson(1, "Success");
+	    return returnSuccess();
 
 	} else {
-	    return getResponseJson(0, "Book not found");
+	    return returnError("Book not found");
 
 	}
 
     }
 
-    private Map<String, Object> getResponseJson(int code, String msg) {
-	Map<String, Object> map = new HashMap<>();
-	map.put("code", code);
-	map.put("message", msg);
-	return map;
+    private String returnSuccess() {
+	JSONObject jsonObject = new JSONObject();
+	jsonObject.put("success", true);
+	return jsonObject.toString();
 
+    }
+
+    private String returnError(String msg) {
+	JSONObject jsonObject = new JSONObject();
+	JSONObject errors = new JSONObject();
+	errors.put("message", msg);
+	jsonObject.put("error", errors);
+	return jsonObject.toString();
     }
 }

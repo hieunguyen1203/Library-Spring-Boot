@@ -1,8 +1,13 @@
 package library.hieund.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
+
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,22 +29,36 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public String signin(String username, String password) {
+    public String login(String username, String password) {
 	try {
 	    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-	    return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getAppUserRoles());
+	    JSONObject jsonObject = new JSONObject();
+	    jsonObject.put("success", true);
+	    jsonObject.put("access_token",
+		    jwtTokenProvider.createToken(username, userRepository.findByEmail(username).getAppUserRoles()));
+
+	    return jsonObject.toString();
+
 	} catch (AuthenticationException e) {
-	    throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+	    return returnError("Wrong Credential");
+//	    throw new CustomException("Wrong Credential", HttpStatus.UNPROCESSABLE_ENTITY);
 	}
+
     }
 
-    public String signup(User appUser) {
-	if (!userRepository.existsByUsername(appUser.getUsername())) {
+    public String register(User appUser) {
+	if (!userRepository.existsByEmail(appUser.getEmail())) {
 	    appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
 	    userRepository.save(appUser);
-	    return jwtTokenProvider.createToken(appUser.getUsername(), appUser.getAppUserRoles());
+	    JSONObject jsonObject = new JSONObject();
+	    jsonObject.put("success", true);
+	    jsonObject.put("access_token",
+		    jwtTokenProvider.createToken(appUser.getUsername(), appUser.getAppUserRoles()));
+
+	    return jsonObject.toString();
 	} else {
-	    throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
+	    return returnError("Email is already in use");
+//	    throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
 	}
     }
 
@@ -47,8 +66,8 @@ public class UserService {
 	userRepository.deleteByUsername(username);
     }
 
-    public User search(String username) {
-	User appUser = userRepository.findByUsername(username);
+    public User search(String email) {
+	User appUser = userRepository.findByEmail(email);
 	if (appUser == null) {
 	    throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
 	}
@@ -56,11 +75,19 @@ public class UserService {
     }
 
     public User whoami(HttpServletRequest req) {
-	return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
+	return userRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
     }
 
     public String refresh(String username) {
-	return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getAppUserRoles());
+	return jwtTokenProvider.createToken(username, userRepository.findByEmail(username).getAppUserRoles());
+    }
+
+    private String returnError(String msg) {
+	JSONObject jsonObject = new JSONObject();
+	JSONObject errors = new JSONObject();
+	errors.put("message", msg);
+	jsonObject.put("error", errors);
+	return jsonObject.toString();
     }
 
 }
