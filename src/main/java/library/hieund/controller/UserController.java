@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
-import library.hieund.dto.UserDataDTO;
+import library.hieund.dto.UserDTO;
 import library.hieund.dto.UserResponseDTO;
 import library.hieund.model.User;
 import library.hieund.service.UserService;
@@ -65,7 +65,7 @@ public class UserController {
 	    @ApiResponse(code = 400, message = "Something went wrong"), //
 	    @ApiResponse(code = 403, message = "Access denied"), //
 	    @ApiResponse(code = 422, message = "Username is already in use") })
-    public String register(@ApiParam("Signup User") @RequestBody UserDataDTO user) {
+    public String register(@ApiParam("Signup User") @RequestBody UserDTO user) {
 	return userService.register(modelMapper.map(user, User.class));
     }
 
@@ -82,18 +82,18 @@ public class UserController {
 	return username;
     }
 
-    @GetMapping(value = "/{username}")
-    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    @ApiOperation(value = "${UserController.search}", response = UserResponseDTO.class, authorizations = {
-	    @Authorization(value = "apiKey") })
-    @ApiResponses(value = { //
-	    @ApiResponse(code = 400, message = "Something went wrong"), //
-	    @ApiResponse(code = 403, message = "Access denied"), //
-	    @ApiResponse(code = 404, message = "The user doesn't exist"), //
-	    @ApiResponse(code = 500, message = "Expired or invalid JWT token") })
-    public UserResponseDTO search(@ApiParam("Username") @PathVariable String username) {
-	return modelMapper.map(userService.search(username), UserResponseDTO.class);
-    }
+//    @GetMapping(value = "/{username}")
+//    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
+//    @ApiOperation(value = "${UserController.search}", response = UserResponseDTO.class, authorizations = {
+//	    @Authorization(value = "apiKey") })
+//    @ApiResponses(value = { //
+//	    @ApiResponse(code = 400, message = "Something went wrong"), //
+//	    @ApiResponse(code = 403, message = "Access denied"), //
+//	    @ApiResponse(code = 404, message = "The user doesn't exist"), //
+//	    @ApiResponse(code = 500, message = "Expired or invalid JWT token") })
+//    public UserResponseDTO search(@ApiParam("Username") @PathVariable String username) {
+//	return modelMapper.map(userService.search(username), UserResponseDTO.class);
+//    }
 
     @GetMapping(value = "/me")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN') or hasRole('ROLE_BORROWER')")
@@ -103,15 +103,24 @@ public class UserController {
 	    @ApiResponse(code = 400, message = "Something went wrong"), //
 	    @ApiResponse(code = 403, message = "Access denied"), //
 	    @ApiResponse(code = 500, message = "Expired or invalid JWT token") })
-    public UserResponseDTO whoami(HttpServletRequest req) {
-	return modelMapper.map(userService.whoami(req), UserResponseDTO.class);
+    public UserResponseDTO whoAmI(HttpServletRequest req) {
+	return modelMapper.map(userService.whoAmI(req), UserResponseDTO.class);
     }
 
-    @GetMapping("/refresh")
+    @PatchMapping("/me/update")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN') or hasRole('ROLE_BORROWER')")
-    public String refresh(HttpServletRequest req) {
-	return userService.refresh(req.getRemoteUser());
+    public String updateUser(HttpServletRequest req, @RequestBody @Valid UserDTO userDataDTO,
+	    BindingResult bindingResult) {
+
+	return userService.updateUser(req, userDataDTO, bindingResult);
+
     }
+
+//    @GetMapping("/refresh")
+//    @PreAuthorize("hasRole('ROLE_LIBRARIAN') or hasRole('ROLE_BORROWER')")
+//    public String refresh(HttpServletRequest req) {
+//	return userService.refresh(req.getRemoteUser());
+//    }
 
     @GetMapping(value = "/all")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
@@ -140,9 +149,9 @@ public class UserController {
 
     @PatchMapping("/update")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public String updateUser(@RequestBody @Valid UserDataDTO userDataDTO, BindingResult bindingResult) {
-
-	return userService.updateUser(userDataDTO, bindingResult);
+    public String updateUserById(@RequestBody @Valid UserDTO userDataDTO, BindingResult bindingResult) {
+//	return "ok";
+	return userService.updateUserById(userDataDTO, bindingResult);
 
     }
 

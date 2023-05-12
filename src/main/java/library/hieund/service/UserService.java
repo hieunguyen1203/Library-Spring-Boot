@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,12 +21,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
-import library.hieund.dto.UserDataDTO;
+import library.hieund.dto.UserDTO;
 import library.hieund.exception.CustomException;
 import library.hieund.model.User;
 import library.hieund.repository.UserRepository;
 import library.hieund.security.JwtTokenProvider;
-import library.hieund.validate.MyValidate;
+
 import library.hieund.validator.EmailConstraint;
 
 @Service
@@ -37,13 +38,13 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public String login(String username, String password) {
+    public String login(String email, String password) {
 	try {
-	    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+	    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 	    JSONObject jsonObject = new JSONObject();
 	    jsonObject.put("success", true);
 	    jsonObject.put("access_token",
-		    jwtTokenProvider.createToken(username, userRepository.findByEmail(username).getAppUserRoles()));
+		    jwtTokenProvider.createToken(email, userRepository.findByEmail(email).getAppUserRoles()));
 
 	    return jsonObject.toString();
 
@@ -60,8 +61,7 @@ public class UserService {
 	    userRepository.save(appUser);
 	    JSONObject jsonObject = new JSONObject();
 	    jsonObject.put("success", true);
-	    jsonObject.put("access_token",
-		    jwtTokenProvider.createToken(appUser.getUsername(), appUser.getAppUserRoles()));
+	    jsonObject.put("access_token", jwtTokenProvider.createToken(appUser.getEmail(), appUser.getAppUserRoles()));
 
 	    return jsonObject.toString();
 	} else {
@@ -82,8 +82,48 @@ public class UserService {
 	return appUser;
     }
 
-    public User whoami(HttpServletRequest req) {
+    public User whoAmI(HttpServletRequest req) {
 	return userRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
+    }
+
+    public String updateUser(HttpServletRequest req, UserDTO userDataDTO, BindingResult bindingResult) {
+	if (bindingResult.hasErrors()) {
+	    return returnError(bindingResult.getAllErrors().get(0).getDefaultMessage());
+	}
+	User user = userRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
+	String email = userDataDTO.getEmail();
+	String username = userDataDTO.getUsername();
+	String password = userDataDTO.getPassword();
+	if (user != null) {
+	    if (StringUtils.isBlank(email) && StringUtils.isBlank(username) && StringUtils.isBlank(password)) {
+		return returnError("Missing parameter");
+	    }
+
+	    if (!StringUtils.isBlank(email)) {
+		if (userRepository.existsByEmail(email)) {
+		    return returnError("This email already exists in the system");
+		}
+		if (email.equals(user.getEmail())) {
+		    return returnError("The new email must not be same as the old email");
+		}
+		user.setEmail(email.toLowerCase());
+	    }
+	    if (!StringUtils.isBlank(username)) {
+		if (username.equals(user.getUsername())) {
+		    return returnError("The new name must not be same as the old name");
+		}
+		user.setUsername(username);
+	    }
+	    if (!StringUtils.isBlank(password)) {
+		if (passwordEncoder.matches(password, user.getPassword())) {
+		    return returnError("New password cannot be exactly the same as old password");
+		}
+		user.setPassword(passwordEncoder.encode(password));
+	    }
+	    userRepository.save(user);
+	    return returnSuccess();
+	}
+	return returnError("User not found");
     }
 
     public String refresh(String username) {
@@ -99,7 +139,7 @@ public class UserService {
 
     }
 
-    public String updateUser(UserDataDTO userDataDTO, BindingResult bindingResult) {
+    public String updateUserById(UserDTO userDataDTO, BindingResult bindingResult) {
 
 	if (bindingResult.hasErrors()) {
 	    return returnError(bindingResult.getAllErrors().get(0).getDefaultMessage());
@@ -108,36 +148,39 @@ public class UserService {
 	String email = userDataDTO.getEmail();
 	String username = userDataDTO.getUsername();
 	String password = userDataDTO.getPassword();
-	User user = userRepository.findById(userDataDTO.getId());
-	if (user != null) {
-	    if (email.equals("") && username.equals("") && password.equals("")) {
-		return returnError("Missing parameter");
-	    }
+	try {
+	    User user = userRepository.findById(Integer.parseInt(userDataDTO.getId()));
+	    if (user != null) {
+		if (StringUtils.isBlank(email) && StringUtils.isBlank(username) && StringUtils.isBlank(password)) {
+		    return returnError("Missing parameter");
+		}
 
-	    if (email.equals(user.getEmail())) {
-		return returnError("The new email must not be same as the old email");
+		if (!StringUtils.isBlank(email)) {
+		    if (userRepository.existsByEmail(email)) {
+			return returnError("This email already exists in the system");
+		    }
+		    if (email.equals(user.getEmail())) {
+			return returnError("The new email must not be same as the old email");
+		    }
+		    user.setEmail(email.toLowerCase());
+		}
+		if (!StringUtils.isBlank(username)) {
+		    if (username.equals(user.getUsername())) {
+			return returnError("The new name must not be same as the old name");
+		    }
+		    user.setUsername(username);
+		}
+		if (!StringUtils.isBlank(password)) {
+		    if (passwordEncoder.matches(password, user.getPassword())) {
+			return returnError("New password cannot be exactly the same as old password");
+		    }
+		    user.setPassword(passwordEncoder.encode(password));
+		}
+		userRepository.save(user);
+		return returnSuccess();
 	    }
-	    if (username.equals(user.getUsername())) {
-		return returnError("The new name must not be same as the old name");
-	    }
-
-	    if (passwordEncoder.matches(password, user.getPassword())) {
-		return returnError("New password cannot be exactly the same as old password");
-	    }
-	    if (userRepository.existsByEmail(email)) {
-		return returnError("This email already exists in the system");
-	    }
-	    if (!email.equals("")) {
-		user.setEmail(email.toLowerCase());
-	    }
-	    if (!username.equals("")) {
-		user.setUsername(username);
-	    }
-	    if (!password.equals("")) {
-		user.setPassword(passwordEncoder.encode(password));
-	    }
-	    userRepository.save(user);
-	    return returnSuccess();
+	} catch (NumberFormatException e) {
+	    return returnError("Id must be numeric");
 	}
 	return returnError("User not found");
     }
