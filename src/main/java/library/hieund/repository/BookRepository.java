@@ -10,6 +10,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     boolean existsByTitle(String title);
 
+    boolean existsByAuthor(String author);
+
     @Transactional
     void deleteById(int id);
 

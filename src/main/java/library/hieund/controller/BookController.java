@@ -42,7 +42,7 @@ public class BookController {
 //    int code = 0;
 //    String message = "";
 
-    @PostMapping("/add")
+    @PostMapping("/create")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     @ExceptionHandler(CustomException.class)
     public String addBook(@RequestBody BookDTO book) {

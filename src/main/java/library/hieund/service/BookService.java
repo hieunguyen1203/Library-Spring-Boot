@@ -24,15 +24,12 @@ public class BookService {
     private final BookRepository bookRepository;
 
     public String addBook(Book book) {
-	if (!bookRepository.existsByTitle(book.getTitle())) {
-	    bookRepository.save(book);
-	    return returnSuccess();
-
-	} else {
+	if (bookRepository.existsByTitle(book.getTitle()) && bookRepository.existsByAuthor(book.getAuthor())) {
 	    return returnError("Book is already exists");
 
-//	    throw new CustomException("Book is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
 	}
+	bookRepository.save(book);
+	return returnSuccess();
 
     }
 
