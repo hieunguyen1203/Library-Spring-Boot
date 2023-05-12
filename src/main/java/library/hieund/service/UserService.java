@@ -18,11 +18,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
+import library.hieund.dto.UserDataDTO;
 import library.hieund.exception.CustomException;
 import library.hieund.model.User;
 import library.hieund.repository.UserRepository;
 import library.hieund.security.JwtTokenProvider;
+import library.hieund.validate.MyValidate;
+import library.hieund.validator.EmailConstraint;
 
 @Service
 @RequiredArgsConstructor
@@ -92,6 +96,56 @@ public class UserService {
 	Page<User> thirdPage = userRepository.findAll(pageable);
 	return thirdPage;
 //	return userRepository.findAll();
+
+    }
+
+    public String updateUser(UserDataDTO userDataDTO, BindingResult bindingResult) {
+
+	if (bindingResult.hasErrors()) {
+	    return returnError(bindingResult.getAllErrors().get(0).getDefaultMessage());
+	}
+
+	String email = userDataDTO.getEmail();
+	String username = userDataDTO.getUsername();
+	String password = userDataDTO.getPassword();
+	User user = userRepository.findById(userDataDTO.getId());
+	if (user != null) {
+	    if (email.equals("") && username.equals("") && password.equals("")) {
+		return returnError("Missing parameter");
+	    }
+
+	    if (email.equals(user.getEmail())) {
+		return returnError("The new email must not be same as the old email");
+	    }
+	    if (username.equals(user.getUsername())) {
+		return returnError("The new name must not be same as the old name");
+	    }
+
+	    if (passwordEncoder.matches(password, user.getPassword())) {
+		return returnError("New password cannot be exactly the same as old password");
+	    }
+	    if (userRepository.existsByEmail(email)) {
+		return returnError("This email already exists in the system");
+	    }
+	    if (!email.equals("")) {
+		user.setEmail(email.toLowerCase());
+	    }
+	    if (!username.equals("")) {
+		user.setUsername(username);
+	    }
+	    if (!password.equals("")) {
+		user.setPassword(passwordEncoder.encode(password));
+	    }
+	    userRepository.save(user);
+	    return returnSuccess();
+	}
+	return returnError("User not found");
+    }
+
+    private String returnSuccess() {
+	JSONObject jsonObject = new JSONObject();
+	jsonObject.put("success", true);
+	return jsonObject.toString();
 
     }
 

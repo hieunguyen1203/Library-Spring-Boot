@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,8 +16,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +37,7 @@ import library.hieund.dto.UserDataDTO;
 import library.hieund.dto.UserResponseDTO;
 import library.hieund.model.User;
 import library.hieund.service.UserService;
+import library.hieund.validator.EmailConstraint;
 
 @RestController
 @RequestMapping(value = "/users", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -131,6 +135,14 @@ public class UserController {
 	    jsonObject.put("error", errors);
 	    return jsonObject.toString();
 	}
+
+    }
+
+    @PatchMapping("/update")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
+    public String updateUser(@RequestBody @Valid UserDataDTO userDataDTO, BindingResult bindingResult) {
+
+	return userService.updateUser(userDataDTO, bindingResult);
 
     }
 

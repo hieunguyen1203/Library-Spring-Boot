@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void deleteByUsername(String username);
 
     Page<User> findAll(Pageable pageable);
+
+    User findById(int id);
 }
