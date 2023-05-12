@@ -1,12 +1,19 @@
 package library.hieund.controller;
 
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.math.NumberUtils;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +36,7 @@ import library.hieund.model.User;
 import library.hieund.service.UserService;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(value = "/users", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 @Api(tags = "users")
 @RequiredArgsConstructor
 public class UserController {
@@ -100,6 +107,31 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_LIBRARIAN') or hasRole('ROLE_BORROWER')")
     public String refresh(HttpServletRequest req) {
 	return userService.refresh(req.getRemoteUser());
+    }
+
+    @GetMapping(value = "/all")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
+    public String allUsers(@RequestParam(required = false, defaultValue = "1") int page) {
+
+	try {
+	    int pageNumber = page - 1;
+	    Page<User> users = userService.allUsers(pageNumber);
+	    List<UserResponseDTO> userResponseDTOs = Arrays
+		    .asList(modelMapper.map(users.toList(), UserResponseDTO[].class));
+
+	    JSONObject usersJson = new JSONObject();
+	    usersJson.put("users", userResponseDTOs);
+	    JSONObject jsonObject = new JSONObject();
+	    jsonObject.put("data", usersJson);
+	    return jsonObject.toString();
+	} catch (Exception e) {
+	    JSONObject jsonObject = new JSONObject();
+	    JSONObject errors = new JSONObject();
+	    errors.put("message", "Page must be numeric");
+	    jsonObject.put("error", errors);
+	    return jsonObject.toString();
+	}
+
     }
 
 }

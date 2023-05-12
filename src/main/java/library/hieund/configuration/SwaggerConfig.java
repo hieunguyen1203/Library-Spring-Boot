@@ -36,6 +36,7 @@ public class SwaggerConfig {
 		.paths(Predicates.not(PathSelectors.regex("/error")))//
 		.build()//
 		.apiInfo(metadata())//
+
 		.useDefaultResponseMessages(false)//
 		.securitySchemes(Collections.singletonList(apiKey()))
 		.securityContexts(Collections.singletonList(securityContext()))

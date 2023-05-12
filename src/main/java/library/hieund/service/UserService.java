@@ -1,6 +1,7 @@
 package library.hieund.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import org.json.JSONObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -80,6 +84,15 @@ public class UserService {
 
     public String refresh(String username) {
 	return jwtTokenProvider.createToken(username, userRepository.findByEmail(username).getAppUserRoles());
+    }
+
+    public Page<User> allUsers(int page) {
+
+	Pageable pageable = PageRequest.of(page, 2);
+	Page<User> thirdPage = userRepository.findAll(pageable);
+	return thirdPage;
+//	return userRepository.findAll();
+
     }
 
     private String returnError(String msg) {

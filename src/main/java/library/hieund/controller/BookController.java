@@ -7,6 +7,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +33,7 @@ import library.hieund.service.BookService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping(value = "/books", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 @Api(tags = "books")
 @RequiredArgsConstructor
 
